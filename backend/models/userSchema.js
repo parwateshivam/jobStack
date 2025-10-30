@@ -1,6 +1,5 @@
 import mongoose from "mongoose"
 import bcrypt from 'bcrypt'
-import { verify } from 'jsonwebtoken'
 
 let addObject = {
   street: "",
@@ -11,7 +10,7 @@ let addObject = {
 }
 
 let emailObject = {
-  email: "",
+  Useremail: "",
   verify: false
 }
 
