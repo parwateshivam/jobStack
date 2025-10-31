@@ -1,7 +1,6 @@
 import mongoose from "mongoose"
-import bcrypt from 'bcrypt'
 
-let addObject = {
+let addressObject = {
   street: "",
   city: "",
   state: "",
@@ -10,11 +9,11 @@ let addObject = {
 }
 
 let emailObject = {
-  Useremail: "",
-  verify: false
+  userEmail: "",
+  verified: false
 }
 
-let userSchema = mongoose.Schema({
+let userShcema = mongoose.Schema({
   name: {
     type: String,
     require: true
@@ -35,15 +34,15 @@ let userSchema = mongoose.Schema({
   address: {
     type: Object,
     require: true,
-    default: addObject
+    default: addressObject
   },
   dob: {
     type: String,
     require: true
   },
   qualifications: {
-    type: Array,
-    default: []
+    type: String,
+    default: ""
   },
   documents: {
     type: Array,
@@ -59,14 +58,6 @@ let userSchema = mongoose.Schema({
   }
 })
 
-userSchema.pre("save", async function () {
-  try {
-    this.password = await bcrypt.hash(this.password, 10)
-  } catch (err) {
-    console.log("error in pre method : ", err)
-  }
-})
-
-const userModel = new mongoose.model("user", userSchema)
+let userModel = new mongoose.model("users", userShcema)
 
 export { userModel }
