@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import { userRouter } from './routes/userRouter.js'
 import { conn } from './database/conn.js'
 import cors from 'cors'
+import { companyRouter } from './routes/companyRouter.js'
 
 dotenv.config({ path: "./config.env" })
 conn()
@@ -18,10 +19,13 @@ const corsOptions = {
 
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
+app.set('view engine', "ejs");
 
 app.use(cors(corsOptions))
 
 app.use("/user", userRouter)
+
+app.use("/company", companyRouter)
 
 app.use((req, res) => {
   console.log("user trying to access invalid route !")
