@@ -88,8 +88,8 @@ async function handleLoginUser(req, res) {
     const isPasswordCorrect = await bcrypt.compare(password, user.password)
     if (!isPasswordCorrect) throw "Incorrect email or password"
 
-    if (!user.email.verified) {
-      const result = await sendOTP(email) // <-- using imported function
+    if (user.email.verified == false) {
+      const result = await sendOTP(email)
       if (!result.status) throw `Unable to send OTP to ${email} | ${result.message}`
       throw `Email not verified. OTP sent to ${email}`
     }

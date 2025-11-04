@@ -1,8 +1,16 @@
 import express from 'express'
-import { handleCompanyRegister } from '../controllers/companyController.js'
+import {
+  handleCompanyRegister,
+  handleCompanyLogin,
+  handleCompanyVerifyOtp
+} from '../controllers/companyController.js'
 
 const companyRouter = express.Router()
 
-companyRouter.post('/register', handleCompanyRegister)
+companyRouter.post('/company-register', handleCompanyRegister)
 
-export { companyRouter }
+companyRouter.post('/company-verify-otp', handleCompanyVerifyOtp)
+
+companyRouter.post('/company-login', handleCompanyLogin)
+
+export { companyRouter }  

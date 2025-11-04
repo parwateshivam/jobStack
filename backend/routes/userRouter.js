@@ -12,11 +12,11 @@ import { authUser } from '../middlewares/authUser.js'
 
 const userRouter = express.Router()
 
-userRouter.post('/register', handleRegisterUser)
+userRouter.post('/user-register', handleRegisterUser)
 
-userRouter.post('/verify-otp', handleVerifyOtp)
+userRouter.post('/user-verify-otp', handleVerifyOtp)
 
-userRouter.post('/login', handleLoginUser)
+userRouter.post('/user-login', handleLoginUser)
 
 userRouter.post('/password-reset-request', handlePasswordResetRequest)
 
