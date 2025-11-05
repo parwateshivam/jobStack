@@ -50,7 +50,7 @@ async function sendOTPForPasswordReset(email) {
   try {
     const otp = generateRandomOTP()
 
-    const htmlContent = await ejs.renderFile('views/emailOTP', { otp })
+    const htmlContent = await ejs.renderFile('views/emailOTP.ejs', { otp })
 
     const emailOptions = {
       from: process.env.USER_EMAIL,

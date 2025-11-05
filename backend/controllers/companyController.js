@@ -1,7 +1,7 @@
 import { companyModel } from "../models/companySchema.js"
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { sendOTP } from "../utils/sendOtp.js"
+import { sendOTP, sendOTPForPasswordReset } from "../utils/sendOtp.js"
 import { redisClient } from "../utils/redisClient.js"
 
 async function handleCompanyRegister(req, res) {
@@ -28,7 +28,8 @@ async function handleCompanyRegister(req, res) {
     }
 
     const result = await sendOTP(email)
-    if (!result.status) throw (`Unable to send OTP to ${email} | ${result.message}`)
+    if (result.status == false)
+      throw (`Unable to send OTP to ${email} | ${result.message}`)
 
     let newCompany = new companyModel({
       companyDetails,
@@ -49,7 +50,7 @@ async function handleCompanyRegister(req, res) {
 
 async function handleCompanyVerifyOtp(req, res) {
   try {
-    let { email, opt } = req.body
+    let { email, otp } = req.body
 
     const company = await companyModel.findOne({ "email.companyEmail": email })
     if (!company) {
@@ -61,7 +62,7 @@ async function handleCompanyVerifyOtp(req, res) {
       throw ("opt expired/not found")
     }
 
-    if (sendOTP != opt) {
+    if (storedOtp != otp) {
       throw ("otp mismatch or expires")
     }
 
@@ -121,8 +122,57 @@ async function handleCompanyLogin(req, res) {
   }
 }
 
+async function handleCompanyPasswordResetRequest(req, res) {
+  try {
+    let { email } = req.body
+
+    if (!email) throw ("Invalid/missing data")
+
+    const company = await companyModel.findOne({ "email.companyEmail": email })
+    if (!company) throw ("company not found")
+
+    const result = await sendOTPForPasswordReset(email)
+
+    if (!result.status) throw (`Unable to send OTP at ${email} | ${result.message}`)
+
+    res.status(201).json({ message: `OTP sent to ${email} (Valid for 5 mins)` })
+
+  } catch (err) {
+    console.log("Password reset request failed!", err)
+    res.status(400).json({ message: "Password reset request failed!", error: err })
+  }
+}
+
+const handleCompanyPasswordReset = async (req, res) => {
+  try {
+    let { email, otp, newPassword } = req.body;
+
+    const companyExits = await companyModel.findOne({ "email.companyEmail": email })
+    if (!companyExits) throw (`Email ${email} is not registered!`)
+
+    const storedOtp = await redisClient.get(`emailPasswordReset:${email}`)
+    if (!storedOtp) throw ("OTP expired/not found!")
+
+    if (storedOtp != otp) throw ("Invalid OTP!")
+
+    const hash = await bcrypt.hash(newPassword, 10)
+
+    await companyModel.updateOne({ "email.companyEmail": email }, { $set: { "password": hash } })
+
+    redisClient.del(`emailPasswordReset:${email}`)
+
+    res.status(202).json({ message: "Password updated successfully. Please login!" })
+
+  } catch (err) {
+    console.log("Error while verifying the OTP:", err)
+    res.status(500).json({ message: "Failed to reset password, try again later!", err })
+  }
+}
+
 export {
   handleCompanyRegister,
   handleCompanyLogin,
-  handleCompanyVerifyOtp
+  handleCompanyVerifyOtp,
+  handleCompanyPasswordResetRequest,
+  handleCompanyPasswordReset
 }

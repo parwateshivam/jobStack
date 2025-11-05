@@ -113,7 +113,7 @@ async function handlePasswordResetRequest(req, res) {
     const checkUser = await userModel.findOne({ "email.userEmail": email })
     if (!checkUser) throw ("User not found")
 
-    const result = await sendOTPForPasswordReset(email)  // <-- using imported function
+    const result = await sendOTPForPasswordReset(email)
 
     if (!result.status) throw (`Unable to send OTP at ${email} | ${result.message}`)
 
@@ -153,22 +153,13 @@ async function handleResetPassword(req, res) {
 
 async function handleUserFileUpload(req, res) {
   try {
-    if (!req.file) {
-      throw ("failed to upload file")
-    }
-
-    let fileName = req.file.filename
-
-    await userModel.updateOne({ "email.userEmail": req.user.email.userEmail }, { $push: { "documents": fileName } })
-
-    let uploadDest = `uploads/${req.filename}`
-
-    res.status(202).json({ message: "file uploaded successfully !", fileName, uploadDest })
-
+    console.log(req.user)
   } catch (err) {
-    console.log("failed to uplaod file")
-    console.log(err)
-    res.status(500).json({ message: "failed to upload the file in uploads folder :", err })
+    console.log("failed to uplaod file", err)
+    res.status(500).json({
+      message: "failed to upload the file in uploads folder :",
+      error: err
+    })
   }
 }
 

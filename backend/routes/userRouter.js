@@ -18,9 +18,9 @@ userRouter.post('/user-verify-otp', handleVerifyOtp)
 
 userRouter.post('/user-login', handleLoginUser)
 
-userRouter.post('/password-reset-request', handlePasswordResetRequest)
+userRouter.post('/user-password-reset-request', handlePasswordResetRequest)
 
-userRouter.post('/reset-password', handleResetPassword)
+userRouter.post('/user-password-reset', handleResetPassword)
 
 userRouter.post('/upload-file/:file_type', authUser, upload.single('file'), handleUserFileUpload)
 
