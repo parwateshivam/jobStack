@@ -14,7 +14,7 @@ let port = process.env.PORT || 3000
 
 const corsOptions = {
   origin: "*",
-  method: "*"
+  methods: "*"
 }
 
 app.use(express.urlencoded({ extended: true }))

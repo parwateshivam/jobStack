@@ -22,9 +22,6 @@ userRouter.post('/user-password-reset-request', handlePasswordResetRequest)
 
 userRouter.post('/user-password-reset', handleResetPassword)
 
-userRouter.post('/upload-file/:file_type', authUser, upload.single('file'), handleUserFileUpload)
+userRouter.post('/upload-file/:filetype', authUser, upload.single('file'), handleUserFileUpload)
 
 export { userRouter }
-
-
-
