@@ -169,10 +169,53 @@ const handleCompanyPasswordReset = async (req, res) => {
   }
 }
 
+async function handleSubmitCompanyLogo(req, res) {
+  try {
+    if (!req.file) throw ("Failed to upload a file!");
+
+    const fileName = req.file.filename
+    const fileType = req.params.filetype
+
+    // Determine which field to update
+    let updateField = {};
+
+    if (fileType === "companyLogo") {
+      updateField = { companyLogo: fileName }
+    } else {
+      throw ("Invalid file type.")
+    }
+
+    // Update the user document
+    const result = await companyModel.updateOne(
+      { "email.companyEmail": req.company.email.companyEmail }, updateField
+    )
+
+    if (result.modifiedCount === 0) {
+      throw ("User not found or file not saved.")
+    }
+
+    const uploadDest = `uploads/${fileType}s/${fileName}`;
+
+    res.status(202).json({
+      message: `${fileType} uploaded successfully!`,
+      fileName: fileName,
+      uploadDest: uploadDest,
+    });
+
+  } catch (err) {
+    console.log("failed to uplaod file", err)
+    res.status(500).json({
+      message: "failed to upload the file in uploads folder :",
+      error: err
+    })
+  }
+}
+
 export {
   handleCompanyRegister,
   handleCompanyLogin,
   handleCompanyVerifyOtp,
   handleCompanyPasswordResetRequest,
-  handleCompanyPasswordReset
+  handleCompanyPasswordReset,
+  handleSubmitCompanyLogo
 }
