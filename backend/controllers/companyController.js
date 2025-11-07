@@ -101,7 +101,11 @@ async function handleCompanyLogin(req, res) {
 
     if (!company.email.verified) {
       const result = await sendOTP(email)
-      if (result.status == false) throw `Unable to send OTP to ${email} | ${result.message}`
+
+      if (result.status == false) {
+        throw `Unable to send OTP to ${email} | ${result.message}`
+      }
+
       throw `Email not verified. OTP sent to ${email} pls verify your email first`
     }
 
