@@ -41,7 +41,9 @@ async function handleCompanyRegister(req, res) {
 
     await newCompany.save()
 
-    res.send(202).json({ message: `company register successfully and otp sent to ${email} pls verify your email` })
+    res.status(202).json({
+      message: `company register successfully and otp sent to ${email} pls verify your email`
+    })
 
   } catch (err) {
     res.status(500).json({ message: "something went wrong", error: err })
@@ -183,8 +185,10 @@ async function handleSubmitCompanyLogo(req, res) {
     // Determine which field to update
     let updateField = {};
 
-    if (fileType === "companyLogo") {
+    if (fileType === "company_logo") {
       updateField = { companyLogo: fileName }
+    } else if (fileType === "company_document") {
+      updateField = { $push: { documents: fileName } }
     } else {
       throw ("Invalid file type.")
     }

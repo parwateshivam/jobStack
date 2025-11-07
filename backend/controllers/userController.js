@@ -153,17 +153,17 @@ async function handleResetPassword(req, res) {
 
 async function handleUserFileUpload(req, res) {
   try {
-    if (!req.file) throw new Error("Failed to upload a file!");
+    if (!req.file) throw ("Failed to upload a file!");
 
     const fileName = req.file.filename
     const fileType = req.params.filetype
-    // Determine which field to update
+
     let updateField = {};
 
     if (fileType === "resume") {
       updateField = { $push: { documents: fileName } }
     } else if (fileType === "profile_picture") {
-      updateField = { $set: { profile_picture: fileName } }
+      updateField = { profile: fileName }
     } else {
       throw new Error("Invalid file type. Only 'resume' or 'profile_pictures' allowed.")
     }
@@ -174,7 +174,7 @@ async function handleUserFileUpload(req, res) {
     )
 
     if (result.modifiedCount === 0) {
-      throw new Error("User not found or file not saved.")
+      throw ("User not found or file not saved.")
     }
 
     const uploadDest = `uploads/${fileType}s/${fileName}`;

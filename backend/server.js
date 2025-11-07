@@ -4,13 +4,16 @@ import { userRouter } from './routes/userRouter.js'
 import { conn } from './database/conn.js'
 import cors from 'cors'
 import { companyRouter } from './routes/companyRouter.js'
+import { jobRouter } from './routes/jobRouter.js'
 
 dotenv.config({ path: "./config.env" })
+
+// connecting database function
 conn()
 
 const app = express()
-let port = process.env.PORT || 3000
 
+let port = process.env.PORT || 3000
 
 const corsOptions = {
   origin: "*",
@@ -26,6 +29,8 @@ app.use(cors(corsOptions))
 app.use("/user", userRouter)
 
 app.use("/company", companyRouter)
+
+app.use('/job', jobRouter)
 
 app.use((req, res) => {
   console.log("user trying to access invalid route !")

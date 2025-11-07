@@ -44,6 +44,10 @@ let userShcema = mongoose.Schema({
     type: String,
     default: ""
   },
+  profile: {
+    type: String,
+    default: ""
+  },
   documents: {
     type: Array,
     default: []

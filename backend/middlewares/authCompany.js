@@ -6,6 +6,7 @@ dotenv.config({ path: './config.env' })
 
 async function authCompany(req, res, next) {
   try {
+
     let token = req.headers.authorization
 
     if (!token) {
@@ -13,7 +14,7 @@ async function authCompany(req, res, next) {
     }
 
     let decoded = jwt.verify(token, process.env.COMPANY_JWT_SECRET)
-  
+
     let company = await companyModel.findOne({ "_id": decoded.id })
 
     if (!company) {
