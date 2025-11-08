@@ -1,5 +1,6 @@
 import { companyModel } from "../models/companySchema.js";
 import { jobModel } from "../models/jobSchema.js";
+import { userModel } from "../models/userSchema.js";
 
 async function createJob(req, res) {
   try {
@@ -68,15 +69,14 @@ async function handleJobAction(req, res) {
 async function handleJobApplication(req, res) {
   try {
     let user = req.user
-
     if (!user) throw ("user not loged In !")
 
     let { jobId } = req.params
-
     if (!jobId) throw ("job id is invalid !")
 
+    // check weather the application is closed or not
     let jobStatus = await jobModel.findOne({ "_id": jobId })
-    if (jobStatus.closed) {
+    if (jobStatus.closed == true) {
       throw ("unable to apply for job application has been closed")
     }
 
@@ -97,7 +97,10 @@ async function handleJobApplication(req, res) {
     res.status(202).json({ message: "applied for job successfully !" })
   } catch (err) {
     console.log("unable to apply for a job :", err)
-    res.status(400).json({ message: "unable to apply for this job !", err })
+    res.status(400).json({
+      message: "unable to apply for this job !",
+      error: err
+    })
   }
 }
 
