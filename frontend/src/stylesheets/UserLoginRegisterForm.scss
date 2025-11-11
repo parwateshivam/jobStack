@@ -1,7 +1,6 @@
 .login-register-form {
   .content {
     width: 900px;
-    height: 600px;
     margin: auto;
     padding: 3rem;
 
@@ -13,10 +12,6 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr;
-
-      .register {}
-
-      .login {}
 
       .slider {
         width: 50%;
