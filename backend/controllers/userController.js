@@ -9,9 +9,9 @@ dotenv.config({ path: "./config.env" })
 
 const handleRegisterUser = async (req, res) => {
   try {
-    const { name, phone, email, address, dob, qualifications, password } = req.body
+    const { name, phone, email, password, dob, street, city, state, country, pincode } = req.body
 
-    if (!name || !phone || !email || !address || !dob || !qualifications || !password)
+    if (!name || !phone || !email || !password || !dob || !street || !city || !state || !country || !pincode)
       throw ("Invalid or missing data")
 
     const userExists = await userModel.findOne({
@@ -22,6 +22,10 @@ const handleRegisterUser = async (req, res) => {
 
     const emailObject = { userEmail: email, verified: false }
 
+    const addressObject = {
+      street, city, state, country, pincode
+    }
+
     const result = await sendOTP(email)
     if (!result.status) throw (`Unable to send OTP to ${email} | ${result.message}`)
 
@@ -31,9 +35,8 @@ const handleRegisterUser = async (req, res) => {
       name,
       phone,
       email: emailObject,
-      address,
+      address: addressObject,
       dob,
-      qualifications,
       password: hash,
     })
 
