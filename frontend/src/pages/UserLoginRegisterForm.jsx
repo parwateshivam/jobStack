@@ -2,15 +2,21 @@ import React, { useContext, useState } from "react";
 import "../stylesheets/UserLoginRegisterForm.scss";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { MessageContext } from "../context/MessageContext";
-import { requestUserLogin, requestUserRegister, requestVerifyEmail } from "../api/userAPI";
+import { requestUserRegister, requestVerifyEmail, requestUserLogin } from "../api/userAPI";
 import OtpInput from "react-otp-input";
 
 const UserLoginRegisterForm = () => {
+  
   const [openLoginForm, setOpenLoginForm] = useState(true);
+  
   const [showPassword, setShowPassword] = useState(false);
+  
   const [openEmailVerifyForm, setOpenEmailVerifyForm] = useState(false);
+  
   const { triggreMessage } = useContext(MessageContext);
+  
   const [loading, setLoading] = useState(false);
+  
   const [otp, setOtp] = useState(0)
 
   const [registerFormObject, setRegisterFormObject] = useState({
@@ -44,15 +50,14 @@ const UserLoginRegisterForm = () => {
   }
 
   const handleLoginFormSubmit = async (e) => {
-    e.preventDefault();
     try {
+      e.preventDefault()
+
       setLoading(true)
 
       let result = await requestUserLogin(loginFormObject)
 
       if (result.status != 202) throw ("Login Failed !")
-
-      console.log("login successfull : ", result)
 
       setLoginFormObject({ email: "", password: "" })
 
@@ -77,7 +82,6 @@ const UserLoginRegisterForm = () => {
 
   const handleRegisterFormSubmit = async (e) => {
     e.preventDefault();
-
     try {
       setLoading(true);
 
@@ -124,6 +128,8 @@ const UserLoginRegisterForm = () => {
 
       const result = await requestVerifyEmail(payload);
 
+      console.log(result)
+
       if (result.status !== 202) throw "Unable to verify OTP!";
 
       triggreMessage("success", result.data.message || "OTP verified successfully!", true);
@@ -140,7 +146,8 @@ const UserLoginRegisterForm = () => {
     } finally {
       setLoading(false);
     }
-  }
+  };
+
 
   return (
     <div className="login-register-form">
@@ -164,7 +171,7 @@ const UserLoginRegisterForm = () => {
                       name="name"
                       value={registerFormObject.name}
                       onChange={handleRegisterFormChange}
-                      className="mt-2 bg-white border border-gray-300 text-dark   text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                      className="mt-2 bg-white border border-gray-300 text-dark text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                       placeholder="Enter Your Name"
                     />
                   </div>
@@ -286,8 +293,7 @@ const UserLoginRegisterForm = () => {
                       required
                     />
 
-                    <button type="button"
-                      onClick={() => setShowPassword(!showPassword)}>
+                    <button type="button" onClick={() => setShowPassword(!showPassword)}>
                       {showPassword ? <FaEyeSlash size={25} /> : <FaEye size={25} />}
                     </button>
                   </div>
