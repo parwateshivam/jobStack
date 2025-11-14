@@ -6,11 +6,17 @@ import { requestUserLogin, requestUserRegister, requestVerifyEmail } from "../ap
 import OtpInput from "react-otp-input";
 
 const UserLoginRegisterForm = () => {
+  
   const [openLoginForm, setOpenLoginForm] = useState(true);
+  
   const [showPassword, setShowPassword] = useState(false);
+  
   const [openEmailVerifyForm, setOpenEmailVerifyForm] = useState(false);
+  
   const { triggreMessage } = useContext(MessageContext);
+  
   const [loading, setLoading] = useState(false);
+  
   const [otp, setOtp] = useState(0)
 
   const [registerFormObject, setRegisterFormObject] = useState({
