@@ -4,19 +4,25 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { MessageContext } from "../context/MessageContext";
 import { requestUserLogin, requestUserRegister, requestVerifyEmail } from "../api/userAPI";
 import OtpInput from "react-otp-input";
+import { UserContext } from "../context/UserContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 const UserLoginRegisterForm = () => {
-  
+
+  let navigate = useNavigate()
+
+  let { fetchUserProfile } = useContext(UserContext)
+
   const [openLoginForm, setOpenLoginForm] = useState(true);
-  
+
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const [openEmailVerifyForm, setOpenEmailVerifyForm] = useState(false);
-  
+
   const { triggreMessage } = useContext(MessageContext);
-  
+
   const [loading, setLoading] = useState(false);
-  
+
   const [otp, setOtp] = useState(0)
 
   const [registerFormObject, setRegisterFormObject] = useState({
@@ -58,13 +64,15 @@ const UserLoginRegisterForm = () => {
 
       if (result.status != 202) throw ("Login Failed !")
 
-      console.log("login successfull : ", result)
-
       setLoginFormObject({ email: "", password: "" })
 
       localStorage.setItem("token", result.data.token)
 
       triggreMessage("success", result.data.message ? result.data.message : "Login was successfull ! Redirecting to Dashboard.")
+
+      await fetchUserProfile()
+
+      navigate('/user/dashboard')
 
     } catch (err) {
       console.log("user login failed : ", err)

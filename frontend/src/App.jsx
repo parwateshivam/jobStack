@@ -5,6 +5,7 @@ import UserProvider from "./context/UserContext.jsx";
 import MessageProvider from "./context/MessageContext.jsx";
 import Message from "./components/Message.jsx";
 import UserLoginRegisterPage from "./pages/UserLoginRegisterPage.jsx";
+import UserDashboard from "./pages/UserDashboard.jsx";
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/user-login-register" element={<UserLoginRegisterPage />} />
+            <Route path="/user/dashboard" element={<UserDashboard />} />
           </Routes>
         </BrowserRouter>
       </MessageProvider>

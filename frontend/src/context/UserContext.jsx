@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react'
+import { requestUserProfile } from '../api/userAPI'
 
 export const UserContext = createContext()
 
@@ -41,7 +42,7 @@ const UserProvider = ({ children }) => {
   }
 
   return (
-    <UserContext.Provider value={{ user }}>
+    <UserContext.Provider value={{ user, fetchUserProfile, logout }}>
       {children}
     </UserContext.Provider>
   )
