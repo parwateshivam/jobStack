@@ -21,8 +21,6 @@ const UserProvider = ({ children }) => {
 
       let result = await requestUserProfile(token)
 
-      console.log(result)
-
       if (result.status != 200) throw ("unable to fetch user profile !")
 
       setUser(prev => {

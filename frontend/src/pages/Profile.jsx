@@ -2,36 +2,83 @@ import React, { useContext, useState } from 'react'
 
 import "../stylesheets/Profile.scss"
 
-import { FaTimes, FaUser } from 'react-icons/fa'
-import { FaPhone } from "react-icons/fa6";
+// react icons
+import { FaTimes, FaUser, FaCamera, FaCheckCircle } from 'react-icons/fa'
+import { FaPhone, FaLocationDot } from "react-icons/fa6";
 import { IoMdMail } from "react-icons/io";
-import { FaCheckCircle } from "react-icons/fa";
-import { FaLocationDot } from "react-icons/fa6";
+
 import { UserContext } from '../context/UserContext';
+import { MessageContext } from '../context/MessageContext'
+import {
+  requestOTPForPasswordReset,
+  requestUserEmailOtpVerificationPasswordReset,
+  userProfilePicture
+} from '../api/userAPI';
 
 const Profile = () => {
 
-  let { user } = useContext(UserContext)
+  let { user, fetchUserProfile } = useContext(UserContext)
 
-  let [triggerEditForm, setTriggerEditForm] = useState(false)
+  let { triggreMessage } = useContext(MessageContext)
 
-  const EditPopUpForm = (props) => {
-    return (
-      <div id='edit-pop-up-form'>
-        <div className='edit-form rounded relative'>
-          <h1>this is pop-up form</h1>
-          <button onClick={() => { setTriggerEditForm(!triggerEditForm) }} className='absolute left-full -translate-x-1/2 -translate-y-1/2 top-0 bg-red-500 hover:bg-red-700 transition p-2 font-bold rounded-full text-light'>
-            <FaTimes />
-          </button>
-        </div>
-      </div>
-    )
+  let [triggerProfilePictureChange, setTriggerProfilePictureChange] = useState(false)
+
+  let [selectedImage, setSelectedImage] = useState(null)
+
+  let [previewUrl, setPreviewUrl] = useState(null)
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0]
+    if (file && file.type.startsWith("image/")) {
+      setSelectedImage(file)
+      setPreviewUrl(URL.createObjectURL(file))
+    } else {
+      triggreMessage("warning", "invalid/missing file !")
+    }
   }
 
+  const handleDragOver = (e) => {
+    e.preventDefault()
+  }
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0]
+    if (file && file.type.startsWith("image/")) {
+      setSelectedImage(file)
+      setPreviewUrl(URL.createObjectURL(file))
+    } else {
+      triggreMessage("warning", "invalid/missing file !")
+    }
+  }
+
+  const handleProfilePictureUpload = async () => {
+    let formData = new FormData();
+    formData.append("file", selectedImage);
+
+    try {
+      let token = localStorage.getItem("token");
+
+      let result = await userProfilePicture(token, formData);
+
+      console.log(result)
+
+      setTriggerProfilePictureChange(false)
+      triggreMessage("success", "Profile picture uploaded!");
+      // window.redirect("/")
+      fetchUserProfile()
+      setPreviewUrl(null)
+      setSelectedImage(null)
+
+    } catch (err) {
+      setTriggerProfilePictureChange(false)
+      triggreMessage("danger", err?.response?.data?.message || "Upload failed");
+    }
+  }
+
+
   return (
-
     <>
-
       <div id='user-profile' className='shadow'>
         <div className='bg-dark'></div>
         <div className='information'>
@@ -40,12 +87,88 @@ const Profile = () => {
             <div className='profile-picture'>
               {
                 user.logedIn ?
-                  user.profile_picture ?
-                    <img src={user.logedIn ? user.profile_picture : ""} alt="Profile Picture" /> :
-                    <button onClick={() => setTriggerEditForm(!triggerEditForm)} className='bg-primary p-1 text-light rounded hover:bg-dark transition'>+ Profile Picture</button>
+                  user.profile ?
+                    <>
+                      <img src={user.logedIn ? `${import.meta.env.VITE_BASE_API_URL}/profile_pictures/${user.profile}` : ""} alt="Profile Picture" />
+                      <button onClick={() => setTriggerProfilePictureChange(true)} className='bg-primary px-2 py-1 text-light rounded hover:bg-dark transition'>
+                        <FaCamera />
+                      </button>
+                    </>
+                    :
+                    <button onClick={() => setTriggerProfilePictureChange(true)} className='bg-primary px-2 py-1 text-light rounded hover:bg-dark transition'>
+                      <FaCamera />
+                    </button>
                   : null
               }
+
+              {
+                triggerProfilePictureChange &&
+                <div className='profile-picture-change'>
+                  <div className='picture-change-container rounded relative'>
+                    <button onClick={() => {
+                      setSelectedImage(null)
+                      setPreviewUrl(null)
+                      setTriggerProfilePictureChange(false)
+                    }} className='bg-red-600 p-2 rounded-full absolute text-white start-full top-0 -translate-x-1/2 -translate-y-1/2'>
+                      <FaTimes />
+                    </button>
+                    <div className='content flex justify-center items-center p-52'>
+                      <div
+                        className='grow upload-area bg border border-dashed border-dark p-5 rounded'
+                        onDrop={handleDrop}
+                        onDragOver={handleDragOver}
+                      >
+
+                        <button
+                          onClick={() => {
+
+                          }}
+                        >
+
+                        </button>
+
+                        <label htmlFor="profileImage" className='cursor-pointer'>
+                          {
+                            previewUrl ? (
+                              <div className='flex justify-center items-center flex-col gap-3'>
+                                <span className='font-bold'>Your Selected Profile Picture !</span>
+                                <img src={previewUrl} className='h-40 w-40' />
+                              </div>
+                            ) : (
+                              <div className='flex flex-col items-center justify-center gap-3'>
+                                <span>Drag & Drop Profile Picture Here !</span>
+                                <span className='bg-blue-200 rounded p-2'>or <b>Click</b> to select.</span>
+                              </div>
+                            )
+                          }
+                        </label>
+
+                        <input
+                          type="file"
+                          id='profileImage'
+                          accept='image/*'
+                          onChange={handleFileSelect}
+                          className='hidden'
+                        />
+
+                        {
+                          selectedImage &&
+                          <div className='flex justify-center my-10'>
+                            <button
+                              onClick={handleProfilePictureUpload}
+                              className='bg-primary text-light font-bold px-3 py-1 cursor-pointer'>
+                              Upload
+                            </button>
+                          </div>
+                        }
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
             </div>
+
             {/* NPA*/}
             <div className='user-info-container p-5 flex flex-col gap-3'>
               <div className='flex gap-3 p-3 shadow'>
@@ -109,9 +232,6 @@ const Profile = () => {
           </div>
         </div>
       </div>
-
-      {triggerEditForm ? <EditPopUpForm /> : null}
-
     </>
   )
 }

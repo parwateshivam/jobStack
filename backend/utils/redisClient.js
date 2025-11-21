@@ -13,7 +13,6 @@ redisClient.on("error", (err) => {
 
 try {
   await redisClient.connect();
-  console.log("successfully conected to redis client !")
 } catch (err) {
   console.log("unable to connect with redis client : ", err)
 }

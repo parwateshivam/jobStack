@@ -56,8 +56,6 @@ async function handleVerifyOtp(req, res) {
   try {
     const { email, otp } = req.body
 
-    console.log(email,otp)
-
     const user = await userModel.findOne({ "email.userEmail": email })
     if (!user) throw `Email ${email} is not registered`
 
